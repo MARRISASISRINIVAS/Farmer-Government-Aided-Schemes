@@ -1,0 +1,917 @@
+// Complete JavaScript for AgroSchemes - Farmer Government Aided Schemes
+class AgroSchemesApp {
+    constructor() {
+        this.initialized = false;
+        this.currentUser = null;
+        this.schemes = [];
+        this.crops = [];
+        this.applications = [];
+        this.isAdmin = false;
+    }
+
+    // Initialize the application
+    async initialize() {
+        try {
+            console.log('🌱 Initializing AgroSchemes application...');
+            
+            this.setupEventListeners();
+            await this.loadInitialData();
+            this.initializePage();
+            
+            this.initialized = true;
+            console.log('✅ Application initialized successfully');
+            
+            this.showNotification('Welcome to AgroSchemes! 🌾 Your gateway to agricultural schemes.', 'success');
+        } catch (error) {
+            console.error('❌ Failed to initialize application:', error);
+            this.showNotification('Application failed to load. Please refresh the page.', 'error');
+        }
+    }
+
+    // Set up all event listeners
+    setupEventListeners() {
+        this.setupAuthModalHandlers();
+        this.setupNavigationHandlers();
+        this.setupFormHandlers();
+        this.setupNotificationHandlers();
+        console.log('🔧 Event listeners configured');
+    }
+
+    // Set up authentication modal handlers
+    setupAuthModalHandlers() {
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const authModal = document.getElementById('auth-modal');
+        const closeModal = document.getElementById('close-modal');
+
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => {
+                this.trackAction('open_login_modal');
+                this.showAuthModal('login');
+            });
+        }
+
+        if (registerBtn) {
+            registerBtn.addEventListener('click', () => {
+                this.trackAction('open_register_modal');
+                this.showAuthModal('register');
+            });
+        }
+
+        if (closeModal) {
+            closeModal.addEventListener('click', () => {
+                this.hideAuthModal();
+            });
+        }
+
+        // Form switching
+        const showRegister = document.getElementById('show-register');
+        const showLogin = document.getElementById('show-login');
+
+        if (showRegister) {
+            showRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.switchAuthForm('register');
+            });
+        }
+
+        if (showLogin) {
+            showLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.switchAuthForm('login');
+            });
+        }
+
+        // Close modal when clicking outside
+        if (authModal) {
+            authModal.addEventListener('click', (e) => {
+                if (e.target === authModal) {
+                    this.hideAuthModal();
+                }
+            });
+        }
+    }
+
+    // Set up navigation handlers
+    setupNavigationHandlers() {
+        // Mobile menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('nav-menu');
+
+        if (hamburger && navMenu) {
+            hamburger.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                hamburger.classList.toggle('active');
+                this.trackAction('toggle_mobile_menu');
+            });
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Hero buttons
+        const getStartedBtn = document.getElementById('get-started-btn');
+        const learnMoreBtn = document.getElementById('learn-more-btn');
+
+        if (getStartedBtn) {
+            getStartedBtn.addEventListener('click', () => {
+                this.trackAction('get_started_clicked');
+                this.showAuthModal('register');
+            });
+        }
+
+        if (learnMoreBtn) {
+            learnMoreBtn.addEventListener('click', () => {
+                this.trackAction('learn_more_clicked');
+                document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+    }
+
+    // Set up form handlers
+    setupFormHandlers() {
+        // Login form
+        const loginForm = document.getElementById('login-form-element');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        }
+
+        // Register form
+        const registerForm = document.getElementById('register-form-element');
+        if (registerForm) {
+            registerForm.addEventListener('submit', (e) => this.handleRegister(e));
+        }
+
+        // Google login
+        const googleLoginBtn = document.getElementById('google-login');
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener('click', () => this.handleGoogleLogin());
+        }
+
+        // Contact form
+        const contactForm = document.getElementById('contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', (e) => this.handleContactForm(e));
+        }
+
+        // Logout
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => this.handleLogout());
+        }
+    }
+
+    // Set up notification handlers
+    setupNotificationHandlers() {
+        const notificationClose = document.getElementById('notification-close');
+        if (notificationClose) {
+            notificationClose.addEventListener('click', () => this.hideNotification());
+        }
+    }
+
+    // Initialize page-specific functionality
+    initializePage() {
+        const currentPage = this.getCurrentPage();
+        console.log(`📄 Initializing page: ${currentPage}`);
+
+        switch (currentPage) {
+            case 'dashboard':
+                this.initializeDashboard();
+                break;
+            case 'admin':
+                this.initializeAdmin();
+                break;
+            case 'schemes':
+                this.initializeSchemes();
+                break;
+            case 'crops':
+                this.initializeCrops();
+                break;
+            case 'applications':
+                this.initializeApplications();
+                break;
+            case 'apply':
+                this.initializeApply();
+                break;
+            default:
+                this.initializeHome();
+        }
+    }
+
+    // Get current page
+    getCurrentPage() {
+        const path = window.location.pathname;
+        if (path === '/' || path.includes('index.html')) return 'home';
+        if (path.includes('dashboard')) return 'dashboard';
+        if (path.includes('admin')) return 'admin';
+        if (path.includes('schemes')) return 'schemes';
+        if (path.includes('crops')) return 'crops';
+        if (path.includes('applications')) return 'applications';
+        if (path.includes('apply')) return 'apply';
+        return 'home';
+    }
+
+    // Authentication methods
+    async handleLogin(event) {
+        event.preventDefault();
+        this.showLoading(true);
+
+        try {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            this.trackAction('login_attempt', { email: email.split('@')[0] + '@***' });
+
+            // Simulate authentication
+            await this.simulateAuth(1000);
+
+            // Check if admin credentials
+            if (email === 'admin@agroschemes.gov.in' && password === 'admin123') {
+                this.currentUser = {
+                    email: email,
+                    name: 'System Administrator',
+                    role: 'admin',
+                    id: 'admin_' + Date.now()
+                };
+                this.isAdmin = true;
+                console.log('👨‍💼 Admin login successful');
+                this.showNotification('Welcome Administrator! 👨‍💼', 'success');
+                setTimeout(() => this.redirectTo('admin-complete.html'), 1000);
+            } else {
+                this.currentUser = {
+                    email: email,
+                    name: email.split('@')[0],
+                    role: 'farmer',
+                    id: 'user_' + Date.now()
+                };
+                this.isAdmin = false;
+                console.log('👨‍🌾 User login successful');
+                this.showNotification('Welcome back, farmer! 🌾', 'success');
+                setTimeout(() => this.redirectTo('dashboard-complete.html'), 1000);
+            }
+
+            this.hideAuthModal();
+            this.updateAuthUI(true);
+
+        } catch (error) {
+            console.error('❌ Login failed:', error);
+            this.showNotification('Login failed. Please check your credentials.', 'error');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    async handleRegister(event) {
+        event.preventDefault();
+        this.showLoading(true);
+
+        try {
+            const formData = {
+                name: document.getElementById('register-name').value,
+                email: document.getElementById('register-email').value,
+                phone: document.getElementById('register-phone').value,
+                location: document.getElementById('register-location').value,
+                password: document.getElementById('register-password').value,
+                confirmPassword: document.getElementById('register-confirm-password').value
+            };
+
+            // Validate
+            if (formData.password !== formData.confirmPassword) {
+                throw new Error('Passwords do not match');
+            }
+
+            if (!this.validateEmail(formData.email)) {
+                throw new Error('Please enter a valid email address');
+            }
+
+            if (!this.validatePhone(formData.phone)) {
+                throw new Error('Please enter a valid phone number');
+            }
+
+            this.trackAction('register_attempt', { email: formData.email.split('@')[0] + '@***' });
+
+            // Simulate registration
+            await this.simulateAuth(1500);
+
+            this.currentUser = {
+                email: formData.email,
+                name: formData.name,
+                phone: formData.phone,
+                location: formData.location,
+                role: 'farmer',
+                id: 'user_' + Date.now()
+            };
+
+            console.log('🎉 User registration successful');
+            this.showNotification('Registration successful! Welcome to AgroSchemes! 🎉', 'success');
+            this.hideAuthModal();
+            this.updateAuthUI(true);
+            setTimeout(() => this.redirectTo('dashboard-complete.html'), 1000);
+
+        } catch (error) {
+            console.error('❌ Registration failed:', error);
+            this.showNotification(error.message || 'Registration failed. Please try again.', 'error');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    async handleGoogleLogin() {
+        this.showLoading(true);
+
+        try {
+            this.trackAction('google_login_attempt');
+            await this.simulateAuth(1200);
+
+            this.currentUser = {
+                email: 'farmer@gmail.com',
+                name: 'Google User',
+                provider: 'google',
+                role: 'farmer',
+                id: 'google_user_' + Date.now()
+            };
+
+            console.log('🎉 Google login successful');
+            this.showNotification('Google login successful! 🎉', 'success');
+            this.hideAuthModal();
+            this.updateAuthUI(true);
+            setTimeout(() => this.redirectTo('dashboard-complete.html'), 1000);
+
+        } catch (error) {
+            console.error('❌ Google login failed:', error);
+            this.showNotification('Google login failed. Please try again.', 'error');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    async handleContactForm(event) {
+        event.preventDefault();
+        this.showLoading(true);
+
+        try {
+            const formData = {
+                name: document.getElementById('contact-name').value,
+                email: document.getElementById('contact-email').value,
+                message: document.getElementById('contact-message').value
+            };
+
+            this.trackAction('contact_form_submit', { name: formData.name });
+            await this.simulateAuth(1000);
+
+            this.showNotification('Message sent successfully! We\'ll get back to you soon. 📧', 'success');
+            document.getElementById('contact-form').reset();
+
+        } catch (error) {
+            console.error('❌ Contact form submission failed:', error);
+            this.showNotification('Failed to send message. Please try again.', 'error');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    async handleLogout() {
+        try {
+            this.trackAction('logout', { userId: this.currentUser?.id });
+            this.currentUser = null;
+            this.isAdmin = false;
+            this.updateAuthUI(false);
+            this.showNotification('Logged out successfully. See you soon! 👋', 'info');
+            setTimeout(() => this.redirectTo('complete-index.html'), 1000);
+        } catch (error) {
+            console.error('❌ Logout failed:', error);
+        }
+    }
+
+    // Data loading methods
+    async loadInitialData() {
+        try {
+            this.schemes = await this.loadDemoSchemes();
+            this.crops = await this.loadDemoCrops();
+            this.applications = await this.loadDemoApplications();
+            console.log('📊 Initial data loaded successfully');
+        } catch (error) {
+            console.error('❌ Failed to load initial data:', error);
+        }
+    }
+
+    async loadDemoSchemes() {
+        return [
+            {
+                id: 'scheme_1',
+                title: 'Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)',
+                description: 'Direct income support to landholding farmer families across the country to supplement their financial needs for procuring various inputs related to agriculture and allied activities as well as domestic needs.',
+                benefits: 'Rs. 6,000 per year in three equal installments of Rs. 2,000 each',
+                eligibility: 'All landholding farmer families irrespective of the size of their land holdings',
+                category: 'Financial Support',
+                status: 'Active',
+                documents: ['Aadhaar Card', 'Land Records', 'Bank Account Details'],
+                deadline: '2024-12-31',
+                applicationFee: 0
+            },
+            {
+                id: 'scheme_2',
+                title: 'Pradhan Mantri Fasal Bima Yojana (PMFBY)',
+                description: 'Comprehensive crop insurance scheme providing financial support to farmers suffering crop loss/damage arising due to unforeseen events.',
+                benefits: 'Up to 90% premium subsidy, comprehensive risk coverage',
+                eligibility: 'All farmers - sharecroppers and tenant farmers',
+                category: 'Insurance',
+                status: 'Active',
+                documents: ['Aadhaar Card', 'Land Records', 'Sowing Certificate', 'Bank Account Details'],
+                deadline: '2024-06-30',
+                applicationFee: 'Varies by crop and area'
+            },
+            {
+                id: 'scheme_3',
+                title: 'Soil Health Card Scheme',
+                description: 'Promotes soil test based nutrient management to improve productivity through judicious use of fertilizers.',
+                benefits: 'Free soil testing, customized fertilizer recommendations',
+                eligibility: 'All farmers',
+                category: 'Advisory Services',
+                status: 'Active',
+                documents: ['Aadhaar Card', 'Land Records'],
+                deadline: 'Ongoing',
+                applicationFee: 0
+            },
+            {
+                id: 'scheme_4',
+                title: 'National Agriculture Market (e-NAM)',
+                description: 'Pan-India electronic trading portal which networks the existing APMC mandis to create a unified national market for agricultural commodities.',
+                benefits: 'Better price discovery, reduced transaction costs, real-time information',
+                eligibility: 'Farmers, traders, buyers',
+                category: 'Market Linkage',
+                status: 'Active',
+                documents: ['Aadhaar Card', 'PAN Card', 'Bank Account Details'],
+                deadline: 'Ongoing',
+                applicationFee: 0
+            },
+            {
+                id: 'scheme_5',
+                title: 'Kisan Credit Card (KCC)',
+                description: 'Provides adequate and timely credit support from the banking system to the farmers for their cultivation and other needs.',
+                benefits: 'Easy access to credit, flexible repayment, insurance coverage',
+                eligibility: 'All farmers - individual/joint borrowers who are owner cultivators',
+                category: 'Credit Support',
+                status: 'Active',
+                documents: ['Aadhaar Card', 'Land Records', 'Income Certificate', 'Bank Account Details'],
+                deadline: 'Ongoing',
+                applicationFee: 0
+            }
+        ];
+    }
+
+    async loadDemoCrops() {
+        return [
+            {
+                id: 'crop_1',
+                name: 'Rice (Paddy)',
+                season: 'Kharif',
+                duration: '120-150 days',
+                waterRequirement: 'High (1500-2000mm)',
+                soilType: 'Clay, Loamy clay, Silty clay',
+                description: 'Rice is the staple food crop of India and is grown in almost all states. It requires hot and humid climate with abundant rainfall.',
+                varieties: ['Basmati', 'Non-Basmati', 'Aromatic', 'Long grain'],
+                cultivation: {
+                    seedRate: '20-25 kg/ha for transplanting',
+                    spacing: '20cm x 15cm',
+                    fertilizers: 'NPK 120:60:40 kg/ha',
+                    pestManagement: 'IPM practices recommended'
+                },
+                marketPrice: 'Rs. 2000-2500 per quintal',
+                storageLife: '12-18 months'
+            },
+            {
+                id: 'crop_2',
+                name: 'Wheat',
+                season: 'Rabi',
+                duration: '120-135 days',
+                waterRequirement: 'Medium (450-650mm)',
+                soilType: 'Loamy, Sandy loam, Clay loam',
+                description: 'Wheat is the second most important cereal crop in India. It grows well in cool and moist climate.',
+                varieties: ['Durum wheat', 'Bread wheat', 'Emmer wheat'],
+                cultivation: {
+                    seedRate: '100-125 kg/ha',
+                    spacing: '22.5cm between rows',
+                    fertilizers: 'NPK 120:60:40 kg/ha',
+                    pestManagement: 'Seed treatment and foliar spray'
+                },
+                marketPrice: 'Rs. 2000-2200 per quintal',
+                storageLife: '8-12 months'
+            },
+            {
+                id: 'crop_3',
+                name: 'Cotton',
+                season: 'Kharif',
+                duration: '160-200 days',
+                waterRequirement: 'Medium to High (700-1200mm)',
+                soilType: 'Black cotton soil, Well-drained loamy soil',
+                description: 'Cotton is the most important commercial crop of India. It requires warm climate with bright sunshine.',
+                varieties: ['Bt Cotton', 'Organic Cotton', 'Hybrid varieties'],
+                cultivation: {
+                    seedRate: '1.5-2.5 kg/ha',
+                    spacing: '90cm x 45-60cm',
+                    fertilizers: 'NPK 80:40:40 kg/ha',
+                    pestManagement: 'Bt cotton reduces pesticide use'
+                },
+                marketPrice: 'Rs. 5500-6500 per quintal',
+                storageLife: '6-8 months'
+            },
+            {
+                id: 'crop_4',
+                name: 'Sugarcane',
+                season: 'Year round',
+                duration: '12-18 months',
+                waterRequirement: 'High (1500-2500mm)',
+                soilType: 'Deep, well-drained loamy soil',
+                description: 'Sugarcane is an important cash crop providing raw material for sugar industry and ethanol production.',
+                varieties: ['Early maturing', 'Mid-late maturing', 'High sugar varieties'],
+                cultivation: {
+                    seedRate: '40,000-50,000 setts/ha',
+                    spacing: '90-120cm between rows',
+                    fertilizers: 'NPK 280:90:90 kg/ha',
+                    pestManagement: 'Regular monitoring and IPM'
+                },
+                marketPrice: 'Rs. 280-320 per quintal',
+                storageLife: 'Process immediately after harvest'
+            },
+            {
+                id: 'crop_5',
+                name: 'Maize (Corn)',
+                season: 'Kharif & Rabi',
+                duration: '90-120 days',
+                waterRequirement: 'Medium (600-800mm)',
+                soilType: 'Well-drained sandy loam to clay loam',
+                description: 'Maize is an important cereal crop used for food, feed, and industrial purposes.',
+                varieties: ['Composite varieties', 'Hybrid varieties', 'QPM varieties'],
+                cultivation: {
+                    seedRate: '20-25 kg/ha',
+                    spacing: '60cm x 20cm',
+                    fertilizers: 'NPK 120:60:40 kg/ha',
+                    pestManagement: 'Seed treatment and need-based spray'
+                },
+                marketPrice: 'Rs. 1800-2000 per quintal',
+                storageLife: '6-8 months'
+            }
+        ];
+    }
+
+    async loadDemoApplications() {
+        return [
+            {
+                id: 'app_1',
+                applicationId: 'APP001',
+                farmerName: 'Ravi Kumar',
+                farmerEmail: 'ravi.kumar@example.com',
+                farmerPhone: '9876543210',
+                farmerLocation: 'Haryana',
+                schemeName: 'PM-KISAN',
+                schemeId: 'scheme_1',
+                userId: 'user_1',
+                status: 'approved',
+                submittedDate: '2024-01-15',
+                documents: ['Aadhaar Card', 'Land Records']
+            },
+            {
+                id: 'app_2',
+                applicationId: 'APP002',
+                farmerName: 'Sita Devi',
+                farmerEmail: 'sita.devi@example.com',
+                farmerPhone: '9876543211',
+                farmerLocation: 'Punjab',
+                schemeName: 'Crop Insurance',
+                schemeId: 'scheme_2',
+                userId: 'user_2',
+                status: 'pending',
+                submittedDate: '2024-01-20',
+                documents: ['Aadhaar Card', 'Sowing Certificate']
+            }
+        ];
+    }
+
+    // Page initialization methods
+    initializeHome() {
+        this.loadFeaturedSchemes();
+        this.setupHeroAnimations();
+    }
+
+    initializeDashboard() {
+        this.requireAuth();
+        this.loadUserDashboard();
+    }
+
+    initializeAdmin() {
+        this.requireAdminAuth();
+        this.loadAdminDashboard();
+    }
+
+    initializeSchemes() {
+        this.loadAllSchemes();
+        this.setupSchemeFilters();
+    }
+
+    initializeCrops() {
+        this.loadAllCrops();
+        this.setupCropFilters();
+    }
+
+    initializeApplications() {
+        this.requireAuth();
+        this.loadUserApplications();
+    }
+
+    initializeApply() {
+        this.requireAuth();
+        this.setupApplicationForm();
+    }
+
+    // UI Management methods
+    showAuthModal(mode = 'login') {
+        const modal = document.getElementById('auth-modal');
+        if (modal) {
+            modal.classList.add('active');
+            this.switchAuthForm(mode);
+            this.clearAuthForms();
+        }
+    }
+
+    hideAuthModal() {
+        const modal = document.getElementById('auth-modal');
+        if (modal) {
+            modal.classList.remove('active');
+            this.clearAuthForms();
+        }
+    }
+
+    switchAuthForm(mode) {
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+
+        if (mode === 'login') {
+            loginForm?.classList.add('active');
+            registerForm?.classList.remove('active');
+        } else {
+            loginForm?.classList.remove('active');
+            registerForm?.classList.add('active');
+        }
+    }
+
+    clearAuthForms() {
+        const forms = ['login-form-element', 'register-form-element'];
+        forms.forEach(formId => {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.reset();
+                const errorElements = form.querySelectorAll('.error-message');
+                errorElements.forEach(el => el.remove());
+            }
+        });
+    }
+
+    updateAuthUI(isAuthenticated) {
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        if (isAuthenticated && this.currentUser) {
+            if (loginBtn) loginBtn.classList.add('hidden');
+            if (registerBtn) registerBtn.classList.add('hidden');
+            if (logoutBtn) logoutBtn.classList.remove('hidden');
+        } else {
+            if (loginBtn) loginBtn.classList.remove('hidden');
+            if (registerBtn) registerBtn.classList.remove('hidden');
+            if (logoutBtn) logoutBtn.classList.add('hidden');
+        }
+    }
+
+    showLoading(show = true) {
+        const loading = document.getElementById('loading');
+        if (loading) {
+            if (show) {
+                loading.classList.remove('hidden');
+            } else {
+                loading.classList.add('hidden');
+            }
+        }
+    }
+
+    showNotification(message, type = 'info', duration = 5000) {
+        const notification = document.getElementById('notification');
+        const messageElement = document.getElementById('notification-message');
+        
+        if (notification && messageElement) {
+            notification.className = 'notification';
+            notification.classList.add(type);
+            messageElement.textContent = message;
+            notification.classList.remove('hidden');
+            
+            setTimeout(() => this.hideNotification(), duration);
+        }
+    }
+
+    hideNotification() {
+        const notification = document.getElementById('notification');
+        if (notification) {
+            notification.classList.add('hidden');
+        }
+    }
+
+    // Utility methods
+    requireAuth() {
+        if (!this.currentUser) {
+            this.showNotification('Please login to access this page.', 'warning');
+            this.redirectTo('complete-index.html');
+        }
+    }
+
+    requireAdminAuth() {
+        if (!this.currentUser || !this.isAdmin) {
+            this.showNotification('Admin access required.', 'error');
+            this.redirectTo('complete-index.html');
+        }
+    }
+
+    validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    validatePhone(phone) {
+        const phoneRegex = /^[6-9]\d{9}$/;
+        return phoneRegex.test(phone.replace(/\s+/g, ''));
+    }
+
+    simulateAuth(delay = 1000) {
+        return new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    redirectTo(page) {
+        window.location.href = page;
+    }
+
+    trackAction(action, data = {}) {
+        console.log(`📊 Action tracked: ${action}`, data);
+        // In a real app, this would send data to analytics
+    }
+
+    // Load methods for different sections
+    loadFeaturedSchemes() {
+        const featuredContainer = document.getElementById('featured-schemes');
+        if (featuredContainer && this.schemes.length > 0) {
+            const featured = this.schemes.slice(0, 3);
+            featuredContainer.innerHTML = featured.map(scheme => `
+                <div class="scheme-card">
+                    <h4>${scheme.title}</h4>
+                    <p>${scheme.description.substring(0, 100)}...</p>
+                    <span class="category">${scheme.category}</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    setupHeroAnimations() {
+        const heroIcon = document.querySelector('.hero-icon');
+        if (heroIcon) {
+            heroIcon.style.animation = 'float 3s ease-in-out infinite';
+        }
+    }
+
+    loadUserDashboard() {
+        console.log('📊 Loading user dashboard');
+        // Implementation for dashboard loading
+    }
+
+    loadAdminDashboard() {
+        console.log('👨‍💼 Loading admin dashboard');
+        // Implementation for admin dashboard loading
+    }
+
+    loadAllSchemes() {
+        console.log('📋 Loading all schemes');
+        // Implementation for schemes loading
+    }
+
+    setupSchemeFilters() {
+        console.log('🔍 Setting up scheme filters');
+        // Implementation for scheme filters
+    }
+
+    loadAllCrops() {
+        console.log('🌾 Loading all crops');
+        // Implementation for crops loading
+    }
+
+    setupCropFilters() {
+        console.log('🔍 Setting up crop filters');
+        // Implementation for crop filters
+    }
+
+    loadUserApplications() {
+        console.log('📝 Loading user applications');
+        // Implementation for applications loading
+    }
+
+    setupApplicationForm() {
+        console.log('📝 Setting up application form');
+        // Implementation for application form
+    }
+}
+
+// Utility functions
+function formatDate(date) {
+    return new Intl.DateTimeFormat('en-IN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    }).format(new Date(date));
+}
+
+function formatCurrency(amount, currency = 'INR') {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 0
+    }).format(amount);
+}
+
+function formatNumber(num) {
+    return new Intl.NumberFormat('en-IN').format(num);
+}
+
+function truncateText(text, maxLength, suffix = '...') {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + suffix;
+}
+
+function generateId(prefix = '', length = 8) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = prefix;
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    const result = {};
+    for (const [key, value] of params) {
+        result[key] = value;
+    }
+    return result;
+}
+
+function debounce(func, wait, immediate = false) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            timeout = null;
+            if (!immediate) func(...args);
+        };
+        const callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func(...args);
+    };
+}
+
+// Initialize application when DOM is loaded
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🌱 DOM loaded, initializing AgroSchemes');
+    
+    window.AgroSchemesApp = new AgroSchemesApp();
+    await window.AgroSchemesApp.initialize();
+});
+
+// Handle unhandled errors
+window.addErrorListener('error', (event) => {
+    console.error('❌ Unhandled error occurred:', event.error);
+    if (window.AgroSchemesApp) {
+        window.AgroSchemesApp.showNotification(
+            'Something went wrong. Please refresh if issues persist.', 
+            'error'
+        );
+    }
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('❌ Unhandled promise rejection:', event.reason);
+    if (window.AgroSchemesApp) {
+        window.AgroSchemesApp.showNotification(
+            'Something went wrong. Please refresh if issues persist.', 
+            'error'
+        );
+    }
+});
+
+// Export for module use
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = AgroSchemesApp;
+}

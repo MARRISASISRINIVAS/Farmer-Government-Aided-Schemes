@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroSchemes - Farmer Government Aided Schemes</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo">🌾</div>
+                <span class="logo-text">AgroSchemes</span>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-auth">
+                <button class="btn btn-outline" id="login-btn">Login</button>
+                <button class="btn btn-primary" id="register-btn">Register</button>
+                <button class="btn btn-outline hidden" id="logout-btn">Logout</button>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Empowering Farmers Through Government Schemes</h1>
+            <p class="hero-subtitle">Discover, apply for, and track agricultural government schemes designed to support farmers across the country. Your gateway to financial support, crop insurance, and agricultural guidance.</p>
+            <div class="hero-actions">
+                <button class="btn btn-primary btn-large" id="get-started-btn">
+                    <i class="fas fa-rocket"></i> Get Started
+                </button>
+                <button class="btn btn-outline btn-large" id="learn-more-btn">
+                    <i class="fas fa-info-circle"></i> Learn More
+                </button>
+            </div>
+        </div>
+        <div class="hero-image">
+            <i class="fas fa-seedling hero-icon"></i>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Platform Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-file-alt feature-icon"></i>
+                    <h3>Scheme Discovery</h3>
+                    <p>Browse comprehensive government schemes tailored for farmers with detailed eligibility criteria and benefits. Find schemes that match your farming needs.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-edit feature-icon"></i>
+                    <h3>Easy Application</h3>
+                    <p>Submit applications online with guided forms and document upload capabilities for seamless processing. Track your application status in real-time.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line feature-icon"></i>
+                    <h3>Track Progress</h3>
+                    <p>Monitor your application status in real-time with notifications and updates throughout the approval process. Stay informed every step of the way.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-leaf feature-icon"></i>
+                    <h3>Crop Information</h3>
+                    <p>Access detailed crop cultivation guides, seasonal recommendations, and location-based farming advice. Make informed farming decisions.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-map-marker-alt feature-icon"></i>
+                    <h3>Location-Based</h3>
+                    <p>Get personalized recommendations based on your geographical location and local agricultural conditions. Region-specific guidance.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt feature-icon"></i>
+                    <h3>Mobile Friendly</h3>
+                    <p>Access the platform from any device with our responsive design optimized for mobile and desktop use. Farm management on the go.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>About AgroSchemes</h2>
+                    <p>AgroSchemes is a comprehensive digital platform designed to bridge the gap between farmers and government agricultural schemes. Our mission is to make agricultural support programs accessible, transparent, and easy to navigate for farmers across the country.</p>
+                    <p>With features like real-time application tracking, crop information database, and location-based recommendations, we empower farmers to make informed decisions and access the support they need to thrive in modern agriculture.</p>
+                    <ul class="about-list">
+                        <li><i class="fas fa-check"></i> Simplified scheme discovery and application process</li>
+                        <li><i class="fas fa-check"></i> Real-time application status tracking</li>
+                        <li><i class="fas fa-check"></i> Comprehensive crop and farming information</li>
+                        <li><i class="fas fa-check"></i> Expert agricultural guidance and support</li>
+                    </ul>
+                </div>
+                <div class="about-image">
+                    <i class="fas fa-tractor about-icon"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>support@agroschemes.gov.in</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>1800-123-4567 (Toll Free)</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Support Hours</h4>
+                            <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <input type="text" id="contact-name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="contact-email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="contact-message" placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>AgroSchemes</h4>
+                    <p>Empowering farmers through accessible government agricultural schemes and comprehensive farming support.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Accessibility</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 AgroSchemes. All rights reserved. Built with ❤️ for farmers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-modal">&times;</span>
+            <div class="auth-container">
+                <!-- Login Form -->
+                <div id="login-form" class="auth-form active">
+                    <h7>Login to AgroSchemes</h7>
+                    <form id="login-form-element">
+                        <div class="form-group">
+                            <input type="email" id="login-email" placeholder="Email Address" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="login-password" placeholder="Password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                    </form>
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+                    <button id="google-login" class="btn btn-google btn-full">
+                        <i class="fab fa-google"></i> Continue with Google
+                    </button>
+                    <p class="auth-switch">Don't have an account? <a href="#" id="show-register">Register here</a></p>
+                </div>
+
+                <!-- Register Form -->
+                <div id="register-form" class="auth-form">
+                    <h2>Register for AgroSchemes</h2>
+                    <form id="register-form-element">
+                        <div class="form-group">
+                            <input type="text" id="register-name" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="register-email" placeholder="Email Address" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="register-phone" placeholder="Phone Number" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="register-location" placeholder="Location/District" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="register-password" placeholder="Password" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="register-confirm-password" placeholder="Confirm Password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </button>
+                    </form>
+                    <p class="auth-switch">Already have an account? <a href="#" id="show-login">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification hidden">
+        <span id="notification-message"></span>
+        <button id="notification-close">&times;</button>
+    </div>
+    <script src="firebase-config.js"></script>
+
+    <!-- JavaScript -->
+    <script src="javascrpit"></script>
+</body>
+</html>

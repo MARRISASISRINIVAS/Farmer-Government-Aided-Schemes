@@ -1,0 +1,75 @@
+# 🌾 AgroSchemes - Farmer Government Aided Schemes Portal
+
+AgroSchemes is a modern web application designed to help farmers access and apply for government-aided agricultural schemes. It provides a centralized platform to explore schemes, manage crop data, submit applications, and track application status.
+
+---
+
+## 🚀 Features
+
+- 🔐 **Authentication System**
+  - Login, Register, Logout
+  - Google Login Simulation
+  - Admin and Farmer role-based access
+
+- 🧑‍🌾 **Farmer Dashboard**
+  - View and apply for available schemes
+  - Manage personal application records
+
+- 🧑‍💼 **Admin Panel**
+  - Monitor all scheme applications
+  - Approve or reject requests
+  - View registered users and crop information
+
+- 🌿 **Schemes Section**
+  - View government schemes with details
+  - Filter by categories like Financial Support, Insurance, Advisory, etc.
+
+- 🌾 **Crop Information**
+  - Educational crop data: season, water needs, fertilizers, pest management
+  - Filter by season and type
+
+- 📬 **Contact Form**
+  - Message support team for help and inquiries
+
+- 🎨 **Modern UI/UX**
+  - Responsive and accessible design
+  - Mobile-friendly navigation and hero animations
+  - Notification and alert system
+
+---
+
+## 🧰 Technologies Used
+
+| Frontend | JavaScript | CSS/Styling |
+|----------|------------|-------------|
+| HTML5    | Vanilla JS (ES6+) | Custom CSS, Flexbox, Animations |
+|          | Firebase (optional) | Responsive Design |
+
+---
+
+## 📁 Folder Structure
+
+AgroSchemes/
+├── index.html
+├── dashboard-complete.html
+├── admin-complete.html
+├── crops.html
+├── schemes.html
+├── apply.html
+├── applications.html
+├── assets/
+│ ├── css/
+│ │ └── style.css
+│ ├── js/
+│ └── images/
+├── README.md
+
+
+## 🔑 Admin Credentials (Demo Only)
+
+Use the following credentials to access the **Admin Panel**:
+Email: admin@agroschemes.gov.in
+Password: admin123
+
+
+---
